@@ -1,40 +1,86 @@
-# Python
-*.py[cod]
-__pycache__/
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
 
-# Django
-*.log
-db.sqlite3
-db.sqlite3-journal
-/media/
-/staticfiles/
-local_settings.py
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
 # Virtual Environment
 venv/
 env/
 ENV/
+env.bak/
+venv.bak/
+.venv/
+*.venv/
 
-# IDE
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+/static
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+settings_local_backup.py
+settings_backup.py
+
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.DS_Store
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Backup files
+*.bak
+*_backup.py
 
 # OS
-.DS_Store
 Thumbs.db
 
-# Environment variables
-.env
-.env.local
+# Database
+*.sqlite3
+
+
+
+
+
+
 
 # Migrations (opcional, algunos prefieren versionarlas)
 # */migrations/*.py
 # !*/migrations/__init__.py
+
+
