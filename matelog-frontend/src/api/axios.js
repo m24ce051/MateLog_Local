@@ -1,15 +1,41 @@
 import axios from 'axios';
 
-// Configuración base de Axios para conectar con el backend Django
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api', // URL del backend Django
-  withCredentials: true, // Importante: permite enviar/recibir cookies de sesión
+  baseURL: `${API_URL}/api`,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Función para obtener el token CSRF de las cookies
+// Interceptor para CSRF
+api.interceptors.request.use(
+  (config) => {
+    const csrfToken = getCookie('csrftoken');
+    if (csrfToken) {
+      config.headers['X-CSRFToken'] = csrfToken;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Interceptor para errores
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      if (!window.location.pathname.includes('/login') && 
+          !window.location.pathname.includes('/register')) {
+        window.location.href = '/';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {
@@ -24,47 +50,5 @@ function getCookie(name) {
   }
   return cookieValue;
 }
-
-// Función para obtener el token CSRF del servidor
-export const fetchCSRFToken = async () => {
-  try {
-    await api.get('/users/csrf/');
-  } catch (error) {
-    console.error('Error al obtener CSRF token:', error);
-  }
-};
-
-// Interceptor para incluir el token CSRF en todas las peticiones
-api.interceptors.request.use(
-  (config) => {
-    // Obtener token CSRF de las cookies
-    const csrftoken = getCookie('csrftoken');
-    
-    // Si existe el token, agregarlo a los headers
-    if (csrftoken) {
-      config.headers['X-CSRFToken'] = csrftoken;
-    }
-    
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Interceptor para manejar errores globalmente
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Usuario no autenticado
-      console.log('Usuario no autenticado');
-    } else if (error.response?.status === 403) {
-      // Forbidden - posiblemente falta CSRF token
-      console.error('Error 403 - CSRF token issue');
-    }
-    return Promise.reject(error);
-  }
-);
 
 export default api;
